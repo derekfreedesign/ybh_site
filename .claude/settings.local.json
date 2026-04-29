@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__Claude_Preview__preview_start",
+      "WebFetch(domain:your-behavioral-health.breezy.hr)",
+      "WebFetch(domain:yourbehavioralhealth.com)",
+      "WebFetch(domain:neurowellnessspa.com)",
+      "WebFetch(domain:clearbehavioralhealth.com)",
+      "WebFetch(domain:newlifehouse.com)",
+      "Bash(gh auth *)",
+      "Bash(brew install *)",
+      "Read(//private/tmp/**)",
+      "Bash(curl -sL -o gh.tar.gz \"https://github.com/cli/cli/releases/download/v2.62.0/gh_2.62.0_macOS_arm64.zip\")",
+      "Bash(unzip -q -o gh.tar.gz)",
+      "Bash(mkdir -p ~/.local/bin)",
+      "Bash(cp gh_2.62.0_macOS_arm64/bin/gh ~/.local/bin/gh)",
+      "Bash(chmod +x ~/.local/bin/gh)",
+      "Bash(~/.local/bin/gh --version)",
+      "Bash(~/.local/bin/gh auth *)",
+      "Bash(git init *)",
+      "Bash(git add *)",
+      "Bash(git -c user.email=\"derek.free@yourbehavioralhealth.com\" -c user.name=\"Derek Free\" commit -m \"Initial commit: YBH site \\(home, about, services, careers, contact\\)\")"
+    ]
+  }
+}

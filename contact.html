@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>YBH · Contact</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="root"></div>
+
+<script>
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "palette": "ybh",
+  "heroVariant": "a"
+}/*EDITMODE-END*/;
+</script>
+
+<script type="text/babel" src="components.jsx"></script>
+<script type="text/babel" src="contact-rows.jsx"></script>
+<script type="text/babel" src="rows-shared.jsx"></script>
+
+<script type="text/babel">
+const PALETTES = {
+  ybh:    { orange: '#F5A623', orangeDeep: '#E8911A', yellow: '#FFC727', yellowSoft: '#FFF4C8', yellowPale: '#FEFAE7', orangeSoft: '#FEF0DC', pink: '#EF5D9C', pinkSoft: '#FCE3EE', teal: '#1EC4D4', tealSoft: '#DAF4F7', ink: '#17161A', cream: '#FBF7F1' },
+  warm:   { orange: '#E56B2A', orangeDeep: '#C05419', yellow: '#F2B134', yellowSoft: '#FCEAC4', yellowPale: '#FCF4E1', orangeSoft: '#FAD9C0', pink: '#D14F7A', pinkSoft: '#F3D7E1', teal: '#4A9BA4', tealSoft: '#D6ECEF', ink: '#2A1A12', cream: '#FAF4EA' },
+  citrus: { orange: '#FF7A1A', orangeDeep: '#E25A00', yellow: '#FFE01A', yellowSoft: '#FFF7B8', yellowPale: '#FFFCE0', orangeSoft: '#FFE0C8', pink: '#FF5CA8', pinkSoft: '#FFD5E6', teal: '#1AC6D6', tealSoft: '#CCF3F7', ink: '#1A1510', cream: '#FFFBF2' },
+  muted:  { orange: '#CC8A3C', orangeDeep: '#A56B25', yellow: '#D9B252', yellowSoft: '#EFE3C2', yellowPale: '#F5EED9', orangeSoft: '#E8D5B5', pink: '#B8668A', pinkSoft: '#E6D2DB', teal: '#5E9FA5', tealSoft: '#D3E5E7', ink: '#2A2420', cream: '#F7F2E8' },
+};
+
+function applyPalette(key) {
+  const p = PALETTES[key] || PALETTES.ybh;
+  const r = document.documentElement.style;
+  r.setProperty('--orange',      p.orange);
+  r.setProperty('--orange-deep', p.orangeDeep);
+  r.setProperty('--orange-soft', p.orangeSoft);
+  r.setProperty('--yellow',      p.yellow);
+  r.setProperty('--yellow-soft', p.yellowSoft);
+  r.setProperty('--yellow-pale', p.yellowPale);
+  r.setProperty('--pink',        p.pink);
+  r.setProperty('--pink-soft',   p.pinkSoft);
+  r.setProperty('--teal',        p.teal);
+  r.setProperty('--teal-soft',   p.tealSoft);
+  r.setProperty('--ink',         p.ink);
+  r.setProperty('--cream',       p.cream);
+}
+
+function TweaksPanel({ state, setState }) {
+  const [open, setOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    const handler = (e) => {
+      const d = e.data || {};
+      if (d.type === '__activate_edit_mode')   setOpen(true);
+      if (d.type === '__deactivate_edit_mode') setOpen(false);
+    };
+    window.addEventListener('message', handler);
+    window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+    return () => window.removeEventListener('message', handler);
+  }, []);
+
+  const set = (patch) => {
+    const next = { ...state, ...patch };
+    setState(next);
+    window.parent.postMessage({ type: '__edit_mode_set_keys', edits: patch }, '*');
+  };
+
+  if (!open) return null;
+  return (
+    <div className="tweaks-panel open">
+      <h4>Tweaks</h4>
+      <div className="tw-row">
+        <label>Color palette</label>
+        <div className="tw-swatch-row">
+          {Object.entries(PALETTES).map(([k, p]) => (
+            <div key={k}
+                 className={'tw-swatch' + (state.palette === k ? ' on' : '')}
+                 title={k}
+                 onClick={() => set({ palette: k })}
+                 style={{ background: `conic-gradient(from 0deg, ${p.orange} 0 25%, ${p.yellow} 25% 50%, ${p.teal} 50% 75%, ${p.pink} 75% 100%)` }} />
+          ))}
+        </div>
+        <div style={{ fontSize: 11, color: 'var(--ink-3)' }}>{state.palette}</div>
+      </div>
+      <div className="tw-row">
+        <label>Hero variant</label>
+        <div className="tw-opts">
+          {[['a','Split + photo'],['b','Full-bleed'],['c','Typographic']].map(([k, l]) => (
+            <span key={k} className={'tw-opt' + (state.heroVariant === k ? ' on' : '')} onClick={() => set({ heroVariant: k })}>{l}</span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const [state, setState] = React.useState(TWEAK_DEFAULTS);
+  React.useEffect(() => { applyPalette(state.palette); }, [state.palette]);
+  return (
+    <>
+      <Nav activePage="contact" />
+      <Hero variant={state.heroVariant} />
+      <ReachRow />
+      <AdmissionsRow />
+      <FormRow />
+      <BrandsRow />
+      <MapRow />
+      <CareersRow />
+      <FooterRow />
+      <TweaksPanel state={state} setState={setState} />
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
