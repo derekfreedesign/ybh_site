@@ -8,6 +8,39 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="styles.css" />
+<style>
+.ybhs-wrap *{box-sizing:border-box;margin:0;padding:0}
+.ybhs-wrap{font-family:'Inter',system-ui,-apple-system,sans-serif;background:#FBF7F1;border-top:1px solid #ECE8E0;border-bottom:1px solid #ECE8E0;padding:88px 0}
+.ybhs-inner{max-width:1240px;margin:0 auto;padding:0 32px}
+.ybhs-header{text-align:center;margin-bottom:56px}
+.ybhs-eyebrow{display:inline-block;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#E8911A;margin-bottom:16px}
+.ybhs-heading{font-size:clamp(36px,4.2vw,60px);font-weight:500;letter-spacing:-0.03em;line-height:1.02;color:#17161A}
+.ybhs-heading .ybhs-l{color:#17161A;font-weight:700;cursor:pointer;transition:color .2s}
+.ybhs-heading .ybhs-l.active{color:#E8911A}
+.ybhs-heading .ybhs-dot{color:#17161A;font-weight:700}
+.ybhs-letters{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:36px}
+.ybhs-letters button{width:56px;height:56px;border-radius:14px;border:2px solid #ECE8E0;background:#FBF7F1;color:#17161A;font-size:22px;font-weight:800;cursor:pointer;transition:all .18s;font-family:inherit;letter-spacing:-0.02em;box-shadow:none}
+.ybhs-letters button.active{border-color:#E8911A;background:#F5A623;color:#fff;box-shadow:0 4px 18px -4px rgba(245,166,35,.5)}
+.ybhs-card{max-width:780px;margin:0 auto;background:#fff;border:1px solid #ECE8E0;border-radius:20px;padding:40px 48px;display:flex;gap:36px;align-items:center;min-height:160px}
+.ybhs-icon{width:80px;height:80px;flex-shrink:0;border-radius:18px;background:#F5A623;display:flex;align-items:center;justify-content:center;font-size:42px;font-weight:900;color:#fff;letter-spacing:-0.03em;box-shadow:0 8px 24px -8px rgba(245,166,35,.5)}
+.ybhs-label{font-size:11px;font-weight:600;letter-spacing:.06em;color:#E8911A;text-transform:uppercase;margin-bottom:10px;font-family:'JetBrains Mono',ui-monospace,'SF Mono',monospace}
+.ybhs-value{font-size:22px;font-weight:500;line-height:1.4;color:#17161A}
+.ybhs-value strong{font-weight:800}
+.ybhs-dots{display:flex;justify-content:center;gap:6px;margin-top:20px}
+.ybhs-dots button{height:8px;border-radius:999px;background:#E3DED3;border:none;cursor:pointer;padding:0;transition:all .2s;width:8px}
+.ybhs-dots button.active{background:#F5A623;width:24px}
+.ybhs-vm{display:grid;grid-template-columns:1fr 1px 1fr;max-width:780px;margin:64px auto 0}
+.ybhs-vm-divider{background:#E3DED3;width:1px}
+.ybhs-vm-col{text-align:center;padding:0 40px}
+.ybhs-vm-label{font-size:11px;font-weight:700;letter-spacing:.1em;color:#17161A;text-transform:uppercase;margin-bottom:16px}
+.ybhs-vm-text{font-style:italic;font-size:20px;font-weight:500;line-height:1.4;color:#17161A}
+@media(max-width:600px){
+  .ybhs-card{flex-direction:column;padding:28px 24px;gap:20px}
+  .ybhs-vm{grid-template-columns:1fr;gap:40px}
+  .ybhs-vm-divider{display:none}
+  .ybhs-vm-col{padding:0}
+}
+</style>
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
@@ -25,8 +58,10 @@ function App() {
     <>
       <Nav activePage="careers" />
       <CareersHero />
-      <CareersPositions />
       <CareersWhy />
+      <CareersPositions />
+      <CareersValues />
+      <CareersGallery />
       <FooterRow />
     </>
   );

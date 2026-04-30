@@ -62,7 +62,7 @@ const CareersPositions = () => {
     <section style={{ padding: '80px 0', background: 'var(--cream)' }} data-screen-label="02 Open Positions">
       <div className="container">
         <div style={{ marginBottom: 40 }}>
-          <span className="eyebrow accent">02 · Open positions</span>
+          <span className="eyebrow accent">03 · Open positions</span>
           <h2 className="display-2" style={{ marginTop: 18 }}>Find your role.</h2>
         </div>
 
@@ -157,13 +157,10 @@ const CareersWhy = () => {
       <div className="container">
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.1fr', gap: 64, alignItems: 'start' }}>
           <div>
-            <span className="eyebrow accent">03 · Why YBH</span>
+            <span className="eyebrow accent">02 · Why YBH</span>
             <h2 className="display-2" style={{ marginTop: 18 }}>More than a job.</h2>
             <p className="body" style={{ marginTop: 20 }}>We're not just filling roles — we're building a team that reflects the care we want to deliver. People here are curious, compassionate, and genuinely committed to the mission.</p>
-            <div style={{ marginTop: 32, display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-              <a className="btn btn-dark" href="https://your-behavioral-health.breezy.hr/" target="_blank" rel="noopener noreferrer">See open positions <Arrow /></a>
-              <a className="btn btn-ghost" href="contact.html">Get in touch</a>
-            </div>
+            <p className="body" style={{ marginTop: 16 }}>We support diversity, equity and inclusion both in our solutions and as we grow our organization. We actively encourage people of color, humans of all genders, members of the LGBTQ+ community, veterans, individuals with disabilities, and all other beautifully diverse people on this planet to apply.</p>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
             {items.map((item) => (
@@ -180,4 +177,184 @@ const CareersWhy = () => {
   );
 };
 
-Object.assign(window, { CareersHero, CareersPositions, CareersWhy, POSITIONS, CAR_BRAND_LABEL, CAR_BRAND_COLOR });
+const SPECIAL_VALUES = [
+  { letter: 'S', text: <><strong>S</strong>peak Openly, Listen Deeply, &amp; Share the “Why”</> },
+  { letter: 'P', text: <><strong>P</strong>rioritize Access &amp; Innovation</> },
+  { letter: 'E', text: <><strong>E</strong>mbrace Change, Learning &amp; Collaboration as One Team</> },
+  { letter: 'C', text: <><strong>C</strong>elebrate Everyday Wins</> },
+  { letter: 'I', text: <><strong>I</strong>ntegrity &amp; Compliance: We Act in the Light of Day</> },
+  { letter: 'A', text: <><strong>A</strong>ccountability: We Say It, We Do It</> },
+  { letter: 'L', text: <><strong>L</strong>ead Decisions with Data, Quality &amp; Compassion</> },
+];
+
+const CareersValues = () => {
+  const [active, setActive] = React.useState(0);
+  const letters = SPECIAL_VALUES.map(v => v.letter);
+
+  return (
+    <section className="ybhs-wrap">
+      <div className="ybhs-inner">
+
+        <div className="ybhs-header">
+          <div className="ybhs-eyebrow">04 · Our Values</div>
+          <h2 className="ybhs-heading">
+            Our values make us{' '}
+            {letters.map((l, i) => (
+              <React.Fragment key={i}>
+                <span className={'ybhs-l' + (active === i ? ' active' : '')} onClick={() => setActive(i)}>{l}</span>
+                {i < letters.length - 1 && <span className="ybhs-dot">.</span>}
+              </React.Fragment>
+            ))}
+          </h2>
+          <p style={{ marginTop: 20, fontSize: 18, color: '#4A4752', maxWidth: 600, margin: '20px auto 0', lineHeight: 1.6 }}>
+            Our culture isn't just something we talk about — it's how we show up for patients, for each other, and for our communities every day.
+          </p>
+        </div>
+
+        <div className="ybhs-letters">
+          {letters.map((l, i) => (
+            <button key={i} className={active === i ? 'active' : ''} onClick={() => setActive(i)}>{l}</button>
+          ))}
+        </div>
+
+        <div className="ybhs-card">
+          <div className="ybhs-icon">{SPECIAL_VALUES[active].letter}</div>
+          <div>
+            <div className="ybhs-label">VALUE {active + 1} OF 7</div>
+            <p className="ybhs-value">{SPECIAL_VALUES[active].text}</p>
+          </div>
+        </div>
+
+        <div className="ybhs-dots">
+          {letters.map((_, i) => (
+            <button key={i} className={active === i ? 'active' : ''} onClick={() => setActive(i)}></button>
+          ))}
+        </div>
+
+      </div>
+    </section>
+  );
+};
+
+const GALLERY_PHOTOS = [
+  { src: 'assets/about-hero.jpg', caption: 'The YBH team',            col: '1 / 3', row: '1 / 2' },
+  { src: null, label: 'Team building event',                           col: '3 / 4', row: '1 / 3', bg: '#EDE3D6' },
+  { src: 'assets/hq.jpg',         caption: 'Our Torrance headquarters', col: '1 / 2', row: '2 / 3' },
+  { src: null, label: 'Monthly team lunch',                            col: '2 / 3', row: '2 / 3', bg: '#D4DCDF' },
+  { src: null, label: 'Community outreach',                            col: '1 / 3', row: '3 / 4', bg: '#DDD5C8' },
+  { src: null, label: 'Company celebration',                           col: '3 / 4', row: '3 / 4', bg: '#D8DFD5' },
+];
+
+const CareersGallery = () => {
+  const [active, setActive] = React.useState(null);
+  const count = GALLERY_PHOTOS.length;
+
+  React.useEffect(() => {
+    if (active === null) return;
+    const onKey = (e) => {
+      if (e.key === 'Escape')     setActive(null);
+      if (e.key === 'ArrowRight') setActive(i => Math.min(i + 1, count - 1));
+      if (e.key === 'ArrowLeft')  setActive(i => Math.max(i - 1, 0));
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [active]);
+
+  const CamIcon = ({ size = 36 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="rgba(23,22,26,0.22)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+      <circle cx="12" cy="13" r="4"/>
+    </svg>
+  );
+
+  const NavBtn = ({ onClick, style, children }) => (
+    <button onClick={onClick} style={{
+      background: 'rgba(255,255,255,0.13)', border: 'none', borderRadius: '50%',
+      width: 44, height: 44, color: '#fff', fontSize: 22, cursor: 'pointer',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      lineHeight: 1, ...style,
+    }}>{children}</button>
+  );
+
+  const Placeholder = ({ photo, large }) => (
+    <div style={{
+      width: large ? 600 : '100%', height: large ? 380 : '100%',
+      background: photo.bg, borderRadius: large ? 16 : 0,
+      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: large ? 14 : 8,
+    }}>
+      <CamIcon size={large ? 52 : 36} />
+      <span style={{ fontSize: large ? 15 : 12, color: 'rgba(23,22,26,0.4)', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' }}>{photo.label}</span>
+      <span style={{ fontSize: large ? 13 : 11, color: 'rgba(23,22,26,0.25)' }}>Photo coming soon</span>
+    </div>
+  );
+
+  return (
+    <section style={{ padding: '80px 0', background: 'var(--paper)' }} data-screen-label="05 Life at YBH">
+      <div className="container">
+        <div style={{ textAlign: 'center', marginBottom: 48 }}>
+          <span className="eyebrow accent">05 · Life at YBH</span>
+          <h2 className="display-2" style={{ marginTop: 18 }}>Come as you are. Grow where you belong.</h2>
+          <p className="body" style={{ maxWidth: 560, margin: '16px auto 0' }}>
+            We work hard and celebrate often. Join a team where the culture is as strong as the mission.
+          </p>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gridAutoRows: '240px', gap: 12 }}>
+          {GALLERY_PHOTOS.map((photo, i) => (
+            <div
+              key={i}
+              onClick={() => setActive(i)}
+              style={{
+                gridColumn: photo.col, gridRow: photo.row,
+                borderRadius: 16, overflow: 'hidden', cursor: 'pointer',
+                background: photo.bg || 'var(--cream)',
+                transition: 'transform 0.18s, box-shadow 0.18s',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.015)'; e.currentTarget.style.boxShadow = '0 16px 48px -12px rgba(0,0,0,0.18)'; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = ''; }}
+            >
+              {photo.src
+                ? <img src={photo.src} alt={photo.caption || ''} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', pointerEvents: 'none' }} />
+                : <Placeholder photo={photo} large={false} />
+              }
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {active !== null && (
+        <div
+          style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(10,10,12,0.92)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 40 }}
+          onClick={() => setActive(null)}
+        >
+          <NavBtn onClick={e => { e.stopPropagation(); setActive(null); }} style={{ position: 'absolute', top: 20, right: 20 }}>✕</NavBtn>
+
+          {active > 0 && (
+            <NavBtn onClick={e => { e.stopPropagation(); setActive(i => i - 1); }} style={{ position: 'absolute', left: 20, top: '50%', transform: 'translateY(-50%)' }}>‹</NavBtn>
+          )}
+          {active < count - 1 && (
+            <NavBtn onClick={e => { e.stopPropagation(); setActive(i => i + 1); }} style={{ position: 'absolute', right: 20, top: '50%', transform: 'translateY(-50%)' }}>›</NavBtn>
+          )}
+
+          <p style={{ position: 'absolute', top: 24, left: '50%', transform: 'translateX(-50%)', color: 'rgba(255,255,255,0.35)', fontSize: 12, margin: 0, letterSpacing: '0.06em' }}>
+            {active + 1} / {count}
+          </p>
+
+          <div onClick={e => e.stopPropagation()}>
+            {GALLERY_PHOTOS[active].src
+              ? <img src={GALLERY_PHOTOS[active].src} alt={GALLERY_PHOTOS[active].caption || ''} style={{ maxWidth: '85vw', maxHeight: '80vh', objectFit: 'contain', borderRadius: 12, display: 'block' }} />
+              : <Placeholder photo={GALLERY_PHOTOS[active]} large={true} />
+            }
+            {GALLERY_PHOTOS[active].caption && (
+              <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.55)', fontSize: 13, marginTop: 12, marginBottom: 0 }}>
+                {GALLERY_PHOTOS[active].caption}
+              </p>
+            )}
+          </div>
+        </div>
+      )}
+    </section>
+  );
+};
+
+Object.assign(window, { CareersHero, CareersValues, CareersGallery, CareersPositions, CareersWhy, POSITIONS, CAR_BRAND_LABEL, CAR_BRAND_COLOR });
