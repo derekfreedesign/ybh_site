@@ -43,8 +43,8 @@ const Nav = ({ activePage = '' }) => {
           <a href="contact.html" className={activePage === 'contact' ? 'active' : ''} aria-current={activePage === 'contact' ? 'page' : undefined}>Contact</a>
         </div>
         {isContact
-          ? <a href="#contact" className="btn btn-dark" style={{ padding: '10px 18px', fontSize: 14 }}>Jump to form <Arrow /></a>
-          : <a href="contact.html#contact" className="btn btn-dark" style={{ padding: '10px 18px', fontSize: 14 }}>Get in touch <Arrow /></a>
+          ? <a href="#contact" className="btn btn-primary" style={{ padding: '10px 18px', fontSize: 14 }}>Jump to form <Arrow /></a>
+          : <a href="contact.html#contact" className="btn btn-primary" style={{ padding: '10px 18px', fontSize: 14 }}>Get in touch <Arrow /></a>
         }
       </div>
     </div>

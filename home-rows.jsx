@@ -145,7 +145,7 @@ const HomeAbout = () => (
               </div>
             ))}
           </div>
-          <a className="btn btn-dark" href="about.html" style={{ marginTop: 32, display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+          <a className="btn btn-ghost" href="about.html" style={{ marginTop: 32, display: 'inline-flex', alignItems: 'center', gap: 8 }}>
             Our story <Arrow />
           </a>
         </div>
@@ -285,7 +285,7 @@ const HomeCTA = () => (
           <h2 style={{ marginTop: 18 }}>We're here to help make sense of behavioral health care.</h2>
           <p className="lede">Whether you're looking for care for yourself, a loved one, or want to refer a patient — our team is ready to help you find the right path forward.</p>
           <div className="careers-actions" style={{ marginTop: 32 }}>
-            <a className="btn btn-dark btn-lg" href="contact.html#contact">Contact us <Arrow /></a>
+            <a className="btn btn-primary btn-lg" href="contact.html#contact">Contact us <Arrow /></a>
             <a className="btn btn-ghost btn-lg" href="tel:8663953181">(866) 395-3181</a>
           </div>
         </div>

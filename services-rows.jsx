@@ -46,6 +46,105 @@ const SERVICES_DATA = [
     long:  '24-hour supervised, safe housing with educational and vocational skills support. Reunites families, repairs relationships, and provides clinical programming with therapists and case managers throughout each episode of care.' },
 ];
 
+// ── Helpers ───────────────────────────────────────────────────────
+
+const useIsNarrow = () => {
+  const [narrow, setNarrow] = React.useState(window.innerWidth < 768);
+  React.useEffect(() => {
+    const h = () => setNarrow(window.innerWidth < 768);
+    window.addEventListener('resize', h);
+    return () => window.removeEventListener('resize', h);
+  }, []);
+  return narrow;
+};
+
+const ChevronLeft = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="15 18 9 12 15 6" />
+  </svg>
+);
+const ChevronRight = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="9 18 15 12 9 6" />
+  </svg>
+);
+
+const NavBtn = ({ onClick, disabled, children }) => (
+  <button
+    onClick={onClick}
+    disabled={disabled}
+    style={{
+      width: 44, height: 44, borderRadius: '50%',
+      border: '1px solid var(--line)',
+      background: disabled ? 'transparent' : 'var(--paper)',
+      color: disabled ? 'var(--line)' : 'var(--ink)',
+      cursor: disabled ? 'default' : 'pointer',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      flexShrink: 0, transition: 'all 0.15s',
+    }}
+  >
+    {children}
+  </button>
+);
+
+const DotNav = ({ count, active, onGo }) => (
+  <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+    {Array.from({ length: count }).map((_, i) => (
+      <button
+        key={i}
+        onClick={() => onGo(i)}
+        aria-label={`Go to ${i + 1}`}
+        style={{
+          width: i === active ? 24 : 8, height: 8, borderRadius: 4,
+          background: i === active ? 'var(--ink)' : 'var(--line)',
+          border: 'none', cursor: 'pointer', padding: 0,
+          transition: 'all 0.22s',
+        }}
+      />
+    ))}
+  </div>
+);
+
+// ── Video placeholder ──────────────────────────────────────────────
+
+const VideoPlaceholder = ({ accent }) => {
+  const c = SVC_BRAND_COLOR[accent] || '#333';
+  return (
+    <div style={{
+      position: 'relative', background: '#111827',
+      aspectRatio: '16/9', width: '100%',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      overflow: 'hidden', borderRadius: 14,
+    }}>
+      <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(135deg, ${c}30 0%, transparent 60%)` }} />
+      <div style={{
+        position: 'absolute', inset: 0, opacity: 0.04,
+        backgroundImage: 'linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)',
+        backgroundSize: '44px 44px',
+      }} />
+      <div style={{
+        width: 64, height: 64, borderRadius: '50%',
+        background: 'rgba(255,255,255,0.1)',
+        border: '1.5px solid rgba(255,255,255,0.22)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        position: 'relative', zIndex: 1,
+      }}>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="rgba(255,255,255,0.85)" style={{ marginLeft: 3 }}>
+          <polygon points="5,3 19,12 5,21" />
+        </svg>
+      </div>
+      <div style={{
+        position: 'absolute', bottom: 14, left: 16, zIndex: 1,
+        fontSize: 10, fontWeight: 600, letterSpacing: '0.1em',
+        color: 'rgba(255,255,255,0.28)', textTransform: 'uppercase',
+        fontFamily: 'var(--font-mono)',
+      }}>
+        Video placeholder
+      </div>
+    </div>
+  );
+};
+
 // ──────────────────────────────────────────────────────────────────
 // 1 · Hero
 // ──────────────────────────────────────────────────────────────────
@@ -57,110 +156,10 @@ const ServicesHero = () => (
         <span className="eyebrow accent">Services · Your Behavioral Health</span>
         <h1 className="display">A full continuum of <span className="ink">care.</span></h1>
         <p className="hero-lede">Whether you're starting with a single therapy session or stepping into 24/7 residential care, we have a place for you. Three brands, eight levels of care, one connected system designed to meet you exactly where you are.</p>
-        <div className="hero-meta">
-          <div className="hero-mini"><span className="k">Levels of care</span><span className="v">8 across our network</span></div>
-          <div className="divider" />
-          <div className="hero-mini"><span className="k">Specialties</span><span className="v">Mental health · Addiction · TMS</span></div>
-          <div className="divider" />
-          <div className="hero-mini"><span className="k">Ages served</span><span className="v">12+</span></div>
-        </div>
       </div>
     </div>
   </section>
 );
-
-// ──────────────────────────────────────────────────────────────────
-// 2 · Continuum (interactive horizontal flow)
-// ──────────────────────────────────────────────────────────────────
-const ServicesContinuum = () => {
-  const [active, setActive] = React.useState('tms');
-  const [filter, setFilter] = React.useState('all');
-  const list = filter === 'all' ? SERVICES_DATA : SERVICES_DATA.filter(s => s.brand === filter);
-  const activeSvc = SERVICES_DATA.find(s => s.id === active);
-
-  return (
-    <section style={{ padding: '96px 0', background: 'var(--cream)' }} data-screen-label="02 Continuum">
-      <div className="container">
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.4fr', gap: 48, alignItems: 'end', marginBottom: 40 }}>
-          <div>
-            <span className="eyebrow accent">02 · Our continuum</span>
-            <h2 className="display-2" style={{ marginTop: 18 }}>Eight levels of care, one network.</h2>
-          </div>
-          <p className="body" style={{ marginBottom: 0 }}>
-            Click any stop along the continuum to learn more. Each level of care is delivered by one of our three specialized brands — and patients can move seamlessly between them as their needs change.
-          </p>
-        </div>
-
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 36 }}>
-          {[['all', 'All services', null], ['nws', 'Neuro Wellness Spa', SVC_BRAND_COLOR.nws], ['cbh', 'Clear Behavioral Health', SVC_BRAND_COLOR.cbh], ['nlh', 'New Life House', SVC_BRAND_COLOR.nlh]].map(([k, label, color]) => (
-            <button key={k} onClick={() => setFilter(k)} className={'loc-filter' + (filter === k ? ' on' : '')} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, cursor: 'pointer', border: '1px solid', fontFamily: 'inherit' }}>
-              {color && <span style={{ width: 8, height: 8, borderRadius: '50%', background: color }} />}
-              {label}
-            </button>
-          ))}
-        </div>
-
-        <div style={{ position: 'relative', overflowX: 'auto', paddingBottom: 8 }}>
-          <div style={{ display: 'flex', gap: 8, minWidth: 'max-content', position: 'relative' }}>
-            <div style={{ position: 'absolute', top: 32, left: 28, right: 28, height: 2, background: 'var(--line)', zIndex: 0 }} />
-            {list.map((s) => {
-              const isActive = s.id === active;
-              const c = SVC_BRAND_COLOR[s.brand];
-              return (
-                <button
-                  key={s.id}
-                  onClick={() => setActive(s.id)}
-                  style={{
-                    position: 'relative', zIndex: 1,
-                    display: 'flex', flexDirection: 'column', alignItems: 'center',
-                    background: 'transparent', border: 'none', cursor: 'pointer',
-                    padding: '0 12px', minWidth: 140, fontFamily: 'inherit',
-                  }}
-                >
-                  <div style={{
-                    width: 64, height: 64, borderRadius: '50%',
-                    background: isActive ? c : 'var(--paper)',
-                    color: isActive ? '#fff' : c,
-                    border: '2px solid ' + (isActive ? c : 'var(--line)'),
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    boxShadow: isActive ? `0 8px 24px -8px ${c}66` : 'none',
-                    transition: 'all 0.2s',
-                  }}>
-                    <SvcIcon id={s.id} color={isActive ? '#fff' : c} />
-                  </div>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ink)', marginTop: 14, lineHeight: 1.2, textAlign: 'center' }}>{s.name}</div>
-                  <div style={{ fontSize: 11, color: 'var(--ink-3)', marginTop: 4 }}>{s.ages}</div>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {activeSvc && (filter === 'all' || filter === activeSvc.brand) && (
-          <div style={{ marginTop: 36, background: 'var(--paper)', border: '1px solid var(--line)', borderRadius: 20, padding: '32px 36px', display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 36, alignItems: 'start' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <div style={{ width: 56, height: 56, borderRadius: 14, background: SVC_BRAND_COLOR[activeSvc.brand] + '18', color: SVC_BRAND_COLOR[activeSvc.brand], display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <SvcIcon id={activeSvc.id} color={SVC_BRAND_COLOR[activeSvc.brand]} />
-              </div>
-              <div style={{ fontSize: 11, fontWeight: 600, color: SVC_BRAND_COLOR[activeSvc.brand], letterSpacing: '0.06em', textTransform: 'uppercase', marginTop: 8 }}>{activeSvc.stage}</div>
-              <h3 style={{ fontSize: 24, margin: 0, lineHeight: 1.2, fontWeight: 600 }}>{activeSvc.name}</h3>
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 4 }}>
-                <span style={{ padding: '4px 10px', borderRadius: 999, background: SVC_BRAND_COLOR[activeSvc.brand] + '15', color: SVC_BRAND_COLOR[activeSvc.brand], fontSize: 11, fontWeight: 600 }}>Ages {activeSvc.ages}</span>
-              </div>
-            </div>
-            <div>
-              <p className="body" style={{ marginTop: 0 }}>{activeSvc.short}</p>
-              <p className="body-sm" style={{ marginTop: 12 }}>{activeSvc.long}</p>
-              <a href={SVC_BRAND_URL[activeSvc.brand]} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginTop: 18, fontSize: 14, fontWeight: 600, color: SVC_BRAND_COLOR[activeSvc.brand] }}>
-                Learn more at {SVC_BRAND_LABEL[activeSvc.brand]} <Arrow />
-              </a>
-            </div>
-          </div>
-        )}
-      </div>
-    </section>
-  );
-};
 
 // ──────────────────────────────────────────────────────────────────
 // Patient journey data
@@ -169,9 +168,6 @@ const JOURNEYS = [
   {
     id: 'depression',
     title: 'Depression that resists medication',
-    persona: 'A working professional, 34',
-    summary: 'After two years of medication trials with limited results, Maya\'s psychiatrist refers her to TMS. She continues talk therapy throughout — same provider, same network.',
-    photo: 'https://neurowellnessspa.com/wp-content/uploads/2025/10/tms-therapy-1200x800-1.jpg',
     accent: 'nws',
     steps: [
       { brand: 'nws', svc: 'med',   label: 'Initial psychiatric eval + medication management' },
@@ -181,11 +177,20 @@ const JOURNEYS = [
     ],
   },
   {
+    id: 'adolescent',
+    title: 'Mental health care for a teenager',
+    accent: 'cbh',
+    steps: [
+      { brand: 'cbh', svc: 'php',   label: 'Partial hospitalization — structured daily stabilization' },
+      { brand: 'cbh', svc: 'iop',   label: 'Step down to IOP — group therapy and skill-building' },
+      { brand: 'nws', svc: 'med',   label: 'Ongoing medication management' },
+      { brand: 'nws', svc: 'tms',   label: 'TMS for treatment-resistant symptoms (ages 15+)' },
+      { brand: 'nws', svc: 'brief', label: 'Continued talk therapy for long-term support' },
+    ],
+  },
+  {
     id: 'recovery',
     title: 'Stepping down from acute substance use',
-    persona: 'A father of two, 42',
-    summary: 'James enters detox in crisis, then steps down through PHP, IOP, and alumni support — eventually transitioning to outpatient psychiatry and therapy at Neuro Wellness Spa.',
-    photo: 'https://clearbehavioralhealth.com/wp-content/uploads/2025/01/alcohol-detox-living-room-1200x780.webp',
     accent: 'cbh',
     steps: [
       { brand: 'cbh', svc: 'detox', label: 'Medically supervised detox + residential' },
@@ -198,9 +203,6 @@ const JOURNEYS = [
   {
     id: 'wraparound',
     title: 'Wraparound care for a young man in recovery',
-    persona: 'A college student, 22',
-    summary: 'Tyler moves into structured sober living while attending Clear\'s outpatient program — and gets psychiatric and TMS support from Neuro Wellness Spa, all coordinated.',
-    photo: 'https://b2375669.smushcdn.com/2375669/wp-content/uploads/2024/05/Edited-2-1-scaled-e1751389578345.jpg',
     accent: 'nlh',
     steps: [
       { brand: 'nlh', svc: 'sober', label: 'Moves into structured sober living' },
@@ -237,133 +239,169 @@ const JourneyTimeline = ({ steps }) => (
 );
 
 // ──────────────────────────────────────────────────────────────────
-// 3 · Patient journeys
+// 2 · Patient journeys — alternating list
 // ──────────────────────────────────────────────────────────────────
-const ServicesJourneys = () => (
-  <section style={{ padding: '96px 0', background: 'var(--cream)' }} data-screen-label="03 Journeys">
-    <div className="container">
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.6fr', gap: 48, alignItems: 'end', marginBottom: 40 }}>
-        <div>
-          <span className="eyebrow accent">03 · Patient journeys</span>
-          <h2 className="display-2" style={{ marginTop: 18 }}>How care actually flows.</h2>
-        </div>
-        <p className="body" style={{ marginBottom: 0 }}>
-          Three real-world examples of how patients move through our network. No two journeys are identical — but every one is coordinated across brands, providers, and levels of care.
-        </p>
-      </div>
-
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-        {JOURNEYS.map((j, idx) => {
-          const c = SVC_BRAND_COLOR[j.accent];
-          const flip = idx % 2 === 1;
-          return (
-            <div key={j.id} style={{ background: 'var(--paper)', border: '1px solid var(--line)', borderRadius: 24, overflow: 'hidden', display: 'grid', gridTemplateColumns: flip ? '1.2fr 1fr' : '1fr 1.2fr' }}>
-              {!flip && (
-                <div style={{ position: 'relative', minHeight: 420 }}>
-                  <img src={j.photo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', inset: 0 }} />
-                  <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(135deg, ${c}cc 0%, ${c}55 100%)` }} />
-                  <div style={{ position: 'relative', padding: '36px 32px', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', color: '#fff' }}>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: '#fff', opacity: 0.7, marginBottom: 8 }}>0{idx + 1} / 03</div>
-                    <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', opacity: 0.85, marginBottom: 6 }}>{j.persona}</div>
-                    <h3 style={{ fontSize: 26, margin: 0, lineHeight: 1.2, fontWeight: 600 }}>{j.title}</h3>
-                    <p style={{ marginTop: 14, fontSize: 14, lineHeight: 1.55, opacity: 0.92, maxWidth: '38ch' }}>{j.summary}</p>
-                  </div>
-                </div>
-              )}
-              <div style={{ padding: '36px 40px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ink-3)', marginBottom: 22 }}>The path</div>
-                <JourneyTimeline steps={j.steps} />
-              </div>
-              {flip && (
-                <div style={{ position: 'relative', minHeight: 420 }}>
-                  <img src={j.photo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', inset: 0 }} />
-                  <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(135deg, ${c}cc 0%, ${c}55 100%)` }} />
-                  <div style={{ position: 'relative', padding: '36px 32px', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', color: '#fff' }}>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: '#fff', opacity: 0.7, marginBottom: 8 }}>0{idx + 1} / 03</div>
-                    <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', opacity: 0.85, marginBottom: 6 }}>{j.persona}</div>
-                    <h3 style={{ fontSize: 26, margin: 0, lineHeight: 1.2, fontWeight: 600 }}>{j.title}</h3>
-                    <p style={{ marginTop: 14, fontSize: 14, lineHeight: 1.55, opacity: 0.92, maxWidth: '38ch' }}>{j.summary}</p>
-                  </div>
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  </section>
-);
-
-// ──────────────────────────────────────────────────────────────────
-// 4 · Adolescent services
-// ──────────────────────────────────────────────────────────────────
-const ServicesAdolescent = () => {
-  const teenServices = [
-    { id: 'med',   ages: '12+', title: 'Medication management',  brand: 'nws', body: 'Psychiatric evaluation and medication oversight from prescribers experienced with adolescents.' },
-    { id: 'brief', ages: '12+', title: 'Talk therapy',             brand: 'nws', body: 'CBT, DBT, family therapy, and more — in-person or virtual, with therapists trained in adolescent care.' },
-    { id: 'iop',   ages: '12+', title: 'Intensive Outpatient',     brand: 'cbh', body: 'Group therapy and skill-building for teens stepping up from outpatient or down from PHP.' },
-    { id: 'php',   ages: '12+', title: 'Partial Hospitalization',  brand: 'cbh', body: 'Daily structured programming designed for adolescents managing acute mental health needs.' },
-    { id: 'tms',   ages: '15+', title: 'TMS Therapy',              brand: 'nws', body: 'For older adolescents with depression, anxiety, or OCD who haven\'t responded to medication.' },
-  ];
+const ServicesJourneys = () => {
+  const isNarrow = useIsNarrow();
 
   return (
-    <section style={{ padding: '96px 0' }} data-screen-label="04 Adolescents">
+    <section style={{ padding: '96px 0', background: 'var(--cream)' }} data-screen-label="02 Journeys">
       <div className="container">
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.3fr', gap: 64, alignItems: 'start' }}>
-          <div style={{ position: 'sticky', top: 100 }}>
-            <div style={{ borderRadius: 20, overflow: 'hidden', aspectRatio: '4/5', position: 'relative', marginBottom: 32 }}>
-              <img src="https://neurowellnessspa.com/wp-content/uploads/2025/10/teen-progam-1200x800-1.jpg" alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            </div>
-            <span className="eyebrow accent">04 · For families with teens</span>
-            <h2 className="display-2" style={{ marginTop: 18 }}>Specialized care for ages 12+.</h2>
-            <p className="body" style={{ marginTop: 18 }}>
-              Adolescents need clinicians trained specifically for them — and family systems that get supported, too. Most of our outpatient services are open to teens 12 and older, with TMS available starting at 15.
-            </p>
-            <a className="btn btn-dark" href="contact.html#contact" style={{ marginTop: 28, display: 'inline-flex', alignItems: 'center', gap: 8 }}>Talk to admissions <Arrow /></a>
-          </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            {teenServices.map((s) => {
-              const c = SVC_BRAND_COLOR[s.brand];
-              return (
-                <div key={s.id + s.brand} style={{ background: 'var(--paper)', border: '1px solid var(--line)', borderRadius: 16, padding: '24px 28px', display: 'grid', gridTemplateColumns: '52px 1fr auto', gap: 20, alignItems: 'center' }}>
-                  <div style={{ width: 52, height: 52, borderRadius: 14, background: c + '18', color: c, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <SvcIcon id={s.id} color={c} />
-                  </div>
-                  <div>
-                    <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 4 }}>
-                      <h3 style={{ fontSize: 17, margin: 0, fontWeight: 600 }}>{s.title}</h3>
-                      <span style={{ padding: '2px 8px', borderRadius: 999, background: c + '15', color: c, fontSize: 11, fontWeight: 700 }}>Ages {s.ages}</span>
-                    </div>
-                    <div style={{ fontSize: 11, fontWeight: 600, color: c, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 6 }}>{SVC_BRAND_LABEL[s.brand]}</div>
-                    <p className="body-sm" style={{ margin: 0 }}>{s.body}</p>
-                  </div>
-                </div>
-              );
-            })}
-            <div style={{ background: 'var(--ink)', color: '#fff', borderRadius: 16, padding: '24px 28px', display: 'flex', alignItems: 'center', gap: 16 }}>
-              <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--yellow)', boxShadow: '0 0 0 6px rgba(255,199,39,.2)', flexShrink: 0 }} />
-              <div style={{ fontSize: 14, lineHeight: 1.5 }}>
-                <strong style={{ color: 'var(--yellow)' }}>Sober living and residential care</strong> are available for adults only.
-                Young men 18+ may also access New Life House and Clear's residential programs.
-              </div>
-            </div>
+        <div style={{ display: 'grid', gridTemplateColumns: isNarrow ? '1fr' : '1fr 1.6fr', gap: 48, alignItems: 'end', marginBottom: 56 }}>
+          <div>
+            <span className="eyebrow accent">02 · Patient journeys</span>
+            <h2 className="display-2" style={{ marginTop: 18 }}>How care actually flows.</h2>
           </div>
+          {!isNarrow && (
+            <p className="body" style={{ marginBottom: 0 }}>
+              Four real-world examples of how patients move through our network. No two journeys are identical — but every one is coordinated across brands, providers, and levels of care.
+            </p>
+          )}
         </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+          {JOURNEYS.map((j, idx) => {
+            const flip = !isNarrow && idx % 2 === 1;
+
+            const videoCol = (
+              <div style={{ padding: isNarrow ? '24px 24px' : '36px 44px', borderBottom: isNarrow ? '1px solid var(--line)' : 'none', ...(flip ? {} : { borderRight: '1px solid var(--line)' }) }}>
+                <VideoPlaceholder accent={j.accent} />
+                <p className="body-sm" style={{ marginTop: 20, marginBottom: 0, color: 'var(--ink-4)', fontStyle: 'italic' }}>
+                  Video placeholder — description to be added when footage is available.
+                </p>
+              </div>
+            );
+
+            const pathCol = (
+              <div style={{ padding: isNarrow ? '24px 24px 32px' : '36px 44px', ...(flip ? { borderRight: '1px solid var(--line)' } : {}) }}>
+                <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ink-3)', marginBottom: 24 }}>The path</div>
+                <JourneyTimeline steps={j.steps} />
+              </div>
+            );
+
+            return (
+              <div key={j.id} style={{ background: 'var(--paper)', border: '1px solid var(--line)', borderRadius: 24, overflow: 'hidden' }}>
+                <div style={{ padding: isNarrow ? '28px 24px 20px' : '36px 44px 28px', borderBottom: '1px solid var(--line)' }}>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--ink-3)', display: 'block', marginBottom: 10 }}>0{idx + 1} / 0{JOURNEYS.length}</span>
+                  <h3 style={{ fontSize: isNarrow ? 22 : 28, margin: 0, fontWeight: 600, lineHeight: 1.18 }}>{j.title}</h3>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: isNarrow ? '1fr' : '1fr 1fr' }}>
+                  {flip ? <>{pathCol}{videoCol}</> : <>{videoCol}{pathCol}</>}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
       </div>
     </section>
   );
 };
 
 // ──────────────────────────────────────────────────────────────────
-// 5 · Brand quick-links (lightweight version)
+// 3 · Continuum — card carousel
+// ──────────────────────────────────────────────────────────────────
+const ServicesContinuum = () => {
+  const [filter, setFilter] = React.useState('all');
+  const [idx, setIdx] = React.useState(0);
+  const [touchX, setTouchX] = React.useState(null);
+  const isNarrow = useIsNarrow();
+
+  const list = filter === 'all' ? SERVICES_DATA : SERVICES_DATA.filter(s => s.brand === filter);
+
+  React.useEffect(() => { setIdx(0); }, [filter]);
+
+  const go = (n) => setIdx(Math.max(0, Math.min(list.length - 1, n)));
+  const svc = list[idx] || list[0];
+
+  return (
+    <section style={{ padding: '96px 0', background: 'var(--cream)' }} data-screen-label="03 Continuum">
+      <div className="container">
+
+        <div style={{ display: 'grid', gridTemplateColumns: isNarrow ? '1fr' : '1fr 1.4fr', gap: 48, alignItems: 'end', marginBottom: 40 }}>
+          <div>
+            <span className="eyebrow accent">03 · Our continuum</span>
+            <h2 className="display-2" style={{ marginTop: 18 }}>Eight levels of care, one network.</h2>
+          </div>
+          {!isNarrow && (
+            <p className="body" style={{ marginBottom: 0 }}>
+              Each level of care is delivered by one of our three specialized brands — and patients can move seamlessly between them as their needs change.
+            </p>
+          )}
+        </div>
+
+        {/* Filter buttons */}
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 32 }}>
+          {[['all', 'All services', null], ['nws', 'Neuro Wellness Spa', SVC_BRAND_COLOR.nws], ['cbh', 'Clear Behavioral Health', SVC_BRAND_COLOR.cbh], ['nlh', 'New Life House', SVC_BRAND_COLOR.nlh]].map(([k, label, color]) => (
+            <button key={k} onClick={() => setFilter(k)} className={'loc-filter' + (filter === k ? ' on' : '')} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, cursor: 'pointer', border: '1px solid', fontFamily: 'inherit' }}>
+              {color && <span style={{ width: 8, height: 8, borderRadius: '50%', background: color }} />}
+              {label}
+            </button>
+          ))}
+        </div>
+
+        {/* Service card */}
+        {svc && (
+          <div
+            onTouchStart={e => setTouchX(e.touches[0].clientX)}
+            onTouchEnd={e => {
+              if (touchX === null) return;
+              const d = touchX - e.changedTouches[0].clientX;
+              if (d > 48) go(idx + 1);
+              if (d < -48) go(idx - 1);
+              setTouchX(null);
+            }}
+          >
+            <div style={{ background: 'var(--paper)', border: '1px solid var(--line)', borderRadius: 20, padding: isNarrow ? '28px 24px' : '40px 44px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: isNarrow ? '1fr' : '1fr 2fr', gap: isNarrow ? 24 : 48, alignItems: 'start' }}>
+
+                <div>
+                  <div style={{ width: 60, height: 60, borderRadius: 16, background: SVC_BRAND_COLOR[svc.brand] + '18', color: SVC_BRAND_COLOR[svc.brand], display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20 }}>
+                    <SvcIcon id={svc.id} color={SVC_BRAND_COLOR[svc.brand]} />
+                  </div>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: SVC_BRAND_COLOR[svc.brand], letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 8 }}>{svc.stage}</div>
+                  <h3 style={{ fontSize: isNarrow ? 22 : 26, margin: '0 0 14px', fontWeight: 600, lineHeight: 1.2 }}>{svc.name}</h3>
+                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                    <span style={{ padding: '4px 10px', borderRadius: 999, background: SVC_BRAND_COLOR[svc.brand] + '15', color: SVC_BRAND_COLOR[svc.brand], fontSize: 11, fontWeight: 600 }}>Ages {svc.ages}</span>
+                    <span style={{ padding: '4px 10px', borderRadius: 999, background: 'var(--cream)', color: 'var(--ink-2)', fontSize: 11, fontWeight: 600 }}>{SVC_BRAND_LABEL[svc.brand]}</span>
+                  </div>
+                </div>
+
+                <div>
+                  <p className="body" style={{ marginTop: 0 }}>{svc.short}</p>
+                  <p className="body-sm" style={{ marginTop: 12 }}>{svc.long}</p>
+                  <a href={SVC_BRAND_URL[svc.brand]} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginTop: 20, fontSize: 14, fontWeight: 600, color: SVC_BRAND_COLOR[svc.brand] }}>
+                    Learn more at {SVC_BRAND_LABEL[svc.brand]} <Arrow />
+                  </a>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Navigation */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 14, marginTop: 28 }}>
+          <NavBtn onClick={() => go(idx - 1)} disabled={idx === 0}><ChevronLeft /></NavBtn>
+          <DotNav count={list.length} active={idx} onGo={go} />
+          <NavBtn onClick={() => go(idx + 1)} disabled={idx === list.length - 1}><ChevronRight /></NavBtn>
+        </div>
+
+      </div>
+    </section>
+  );
+};
+
+// ──────────────────────────────────────────────────────────────────
+// 4 · Brand quick-links
 // ──────────────────────────────────────────────────────────────────
 const ServicesBrands = () => (
-  <section style={{ padding: '96px 0', background: 'var(--cream)' }} data-screen-label="05 Brands">
+  <section style={{ padding: '96px 0', background: 'var(--cream)' }} data-screen-label="04 Brands">
     <div className="container">
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.6fr', gap: 48, alignItems: 'end', marginBottom: 48 }}>
         <div>
-          <span className="eyebrow accent">05 · Our brands</span>
+          <span className="eyebrow accent">04 · Our brands</span>
           <h2 className="display-2" style={{ marginTop: 18 }}>Three brands, one network.</h2>
         </div>
         <p className="body" style={{ marginBottom: 0 }}>
@@ -392,36 +430,6 @@ const ServicesBrands = () => (
   </section>
 );
 
-// ──────────────────────────────────────────────────────────────────
-// 6 · CTA
-// ──────────────────────────────────────────────────────────────────
-const ServicesCTA = () => (
-  <section className="careers" data-screen-label="06 CTA" style={{ padding: '96px 0' }}>
-    <div className="container">
-      <div className="careers-inner">
-        <div>
-          <span className="eyebrow accent">06 · Get started</span>
-          <h2 style={{ marginTop: 18 }}>Not sure which level of care fits?</h2>
-          <p className="lede">Tell us a bit about what's going on and we'll point you to the right brand and the right next step — whether that's a 30-minute call or a full assessment.</p>
-          <div className="careers-actions" style={{ marginTop: 32 }}>
-            <a className="btn btn-dark btn-lg" href="contact.html#contact">Contact admissions <Arrow /></a>
-            <a className="btn btn-ghost btn-lg" href="tel:8777991985">Call (877) 799-1985</a>
-          </div>
-        </div>
-        <div className="careers-side">
-          <div className="careers-stats">
-            <div className="careers-stat"><div className="n">8</div><div className="l">Levels of care</div></div>
-            <div className="careers-stat"><div className="n">3</div><div className="l">Specialized brands</div></div>
-            <div className="careers-stat"><div className="n">12+</div><div className="l">Ages served</div></div>
-            <div className="careers-stat"><div className="n">~30</div><div className="l">SoCal locations</div></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-);
-
 Object.assign(window, {
-  ServicesHero, ServicesContinuum, ServicesJourneys,
-  ServicesAdolescent, ServicesBrands, ServicesCTA,
+  ServicesHero, ServicesContinuum, ServicesJourneys, ServicesBrands,
 });

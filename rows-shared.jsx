@@ -204,7 +204,7 @@ const CareersRow = () => (
           <h2 style={{ marginTop: 18 }}>Be part of what we're building.</h2>
           <p className="lede">We're growing a team of people who believe behavioral health care can be better — more accessible, more compassionate, more connected. If that sounds like you, we'd love to meet you.</p>
           <div className="careers-actions" style={{ marginTop: 32 }}>
-            <a className="btn btn-dark btn-lg" href="https://your-behavioral-health.breezy.hr/">Explore open positions <Arrow /></a>
+            <a className="btn btn-ghost btn-lg" href="https://your-behavioral-health.breezy.hr/">Explore open positions <Arrow /></a>
             <a className="btn btn-ghost btn-lg" href="#">Life at YBH</a>
           </div>
           <div>
