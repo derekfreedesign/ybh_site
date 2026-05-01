@@ -152,10 +152,15 @@ const ServicesHero = () => (
   <section className="hero" data-screen-label="01 Hero">
     <Crumb label="Services" />
     <div className="container" style={{ paddingTop: 48 }}>
-      <div style={{ maxWidth: 760 }}>
-        <span className="eyebrow accent">Services · Your Behavioral Health</span>
-        <h1 className="display">A full continuum of <span className="ink">care.</span></h1>
-        <p className="hero-lede">Whether you're starting with a single therapy session or stepping into 24/7 residential care, we have a place for you. Three brands, eight levels of care, one connected system designed to meet you exactly where you are.</p>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64, alignItems: 'center' }}>
+        <div>
+          <span className="eyebrow accent">Services · Your Behavioral Health</span>
+          <h1 className="display">A full continuum of <span className="ink">care.</span></h1>
+          <p className="hero-lede">Whether you're starting with a single therapy session or stepping into 24/7 residential care, we have a place for you. Three brands, eight levels of care, one connected system designed to meet you exactly where you are.</p>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <img src="assets/ybh_continuum.png" alt="YBH care continuum" style={{ width: '100%', maxWidth: 520, height: 'auto', borderRadius: 16 }} />
+        </div>
       </div>
     </div>
   </section>
@@ -251,11 +256,11 @@ const ServicesJourneys = () => {
         <div style={{ display: 'grid', gridTemplateColumns: isNarrow ? '1fr' : '1fr 1.6fr', gap: 48, alignItems: 'end', marginBottom: 56 }}>
           <div>
             <span className="eyebrow accent">02 · Patient journeys</span>
-            <h2 className="display-2" style={{ marginTop: 18 }}>How care actually flows.</h2>
+            <h2 className="display-2" style={{ marginTop: 18 }}>Care today, and every step of the way.</h2>
           </div>
           {!isNarrow && (
             <p className="body" style={{ marginBottom: 0 }}>
-              Four real-world examples of how patients move through our network. No two journeys are identical — but every one is coordinated across brands, providers, and levels of care.
+              Every patient at Your Behavioral Health is unique, and no two journeys are the same. The following real-world examples show you a few of the many ways patients benefit from our full continuum of care.
             </p>
           )}
         </div>
@@ -275,7 +280,7 @@ const ServicesJourneys = () => {
 
             const pathCol = (
               <div style={{ padding: isNarrow ? '24px 24px 32px' : '36px 44px', ...(flip ? { borderRight: '1px solid var(--line)' } : {}) }}>
-                <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ink-3)', marginBottom: 24 }}>The path</div>
+                <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ink-3)', marginBottom: 24 }}>Sample journey</div>
                 <JourneyTimeline steps={j.steps} />
               </div>
             );
@@ -283,7 +288,6 @@ const ServicesJourneys = () => {
             return (
               <div key={j.id} style={{ background: 'var(--paper)', border: '1px solid var(--line)', borderRadius: 24, overflow: 'hidden' }}>
                 <div style={{ padding: isNarrow ? '28px 24px 20px' : '36px 44px 28px', borderBottom: '1px solid var(--line)' }}>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--ink-3)', display: 'block', marginBottom: 10 }}>0{idx + 1} / 0{JOURNEYS.length}</span>
                   <h3 style={{ fontSize: isNarrow ? 22 : 28, margin: 0, fontWeight: 600, lineHeight: 1.18 }}>{j.title}</h3>
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: isNarrow ? '1fr' : '1fr 1fr' }}>
